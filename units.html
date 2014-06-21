@@ -1,0 +1,59 @@
+		<h2 class="text-center text-muted">{{title}}</h2>
+		<div class="center-block text-center" style="padding-bottom: 1%">
+			<form class="form-inline" role="form">
+				<select class="form-control " type="text" ng-model="selectedUnit" ng-options="unit.name for unit in unitList track by unit.id">
+					<option value="">-- choose unit --</option>
+				</select>
+				<button class="btn btn-primary" ng-click="addUnit(selectedUnit)" ng-show="selectedUnit">Add</button>
+			</form>
+			<!-- {{selectedUnit}} -->
+		</div>
+		<p class="text-warning text-center" ng-show="units.length===0" >(No Units)</p>
+		<div class="panel" ng-show="units.length > 0">
+<!-- 				<ol class="list-unstyled sortable units" >
+				<li > -->
+					<table class="table table-striped" ng-model="units">
+						<thead class="">
+							<tr class="h5">
+								<td></td>
+								<td>
+									Name
+								</td>
+								<td class="text-center">
+									Attack
+								</td>
+								<td class="text-center">
+									Defense
+								</td>
+								<td>
+								</td>
+							</tr>
+						</thead>
+						<tbody id="{{sortableId}}" class="sortable">
+							<tr class="h4 column" ng-repeat="unit in units track by unit.name" data-index="{{$index}}">
+								<td>
+									<span class="glyphicon glyphicon-sort"></span>
+								</td>
+								<td>
+									<strong>{{unit.name}}</strong>&nbsp;<a class="right-tip" data-tips="Cost: {{unit.cost}} points, Upkeep: £{{unit.upkeep}}"><small class="glyphicon glyphicon-info-sign text-info"></small><span class="text-hide">info</span></a>
+								</td>
+								<td class="text-center">
+									{{unit.attack}}
+								</td>
+								<td class="text-center">
+									{{unit.defense}}
+								</td>
+								<td>
+									<a class="close" type="button" aria-hidden="true" value="close" ng-click="removeUnit(unit.name)" >&times;</a>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+					<!-- <span class="col-xs-2">{{unit.name}}</span> -->
+					
+<!-- 					</li>
+			</ol> -->
+		</div>
+		<div class="center-block text-center" style="padding-bottom: 1%" ng-show="units.length>0">
+			<button class="btn btn-default" ng-click="shuffleUnits()">Shuffle&nbsp;<span class="glyphicon glyphicon-random"></span></button>
+		</div>
