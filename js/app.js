@@ -18,7 +18,7 @@ var OpenWarUtilsModule = angular.module('openWarUtils', [])
 var OpenWarUtilsApp = angular.module('OpenWarUtilsApp', []);
 
 OpenWarUtilsApp.factory('UnitTypesData', [function () {
-	var unitList = [
+	var unitTypeList = [
  { id: '1', name: 'scout', attack: '0', defense: '0', cost: '10', upkeep: '1'}
 ,{ id: '2', name: 'ranger', attack: '1', defense: '0', cost: '20', upkeep: '2'}
 ,{ id: '3', name: 'lookout', attack: '0', defense: '1', cost: '20', upkeep: '2'}
@@ -36,5 +36,5 @@ OpenWarUtilsApp.factory('UnitTypesData', [function () {
 ,{ id: '15', name: 'tank', attack: '3', defense: '5', cost: '390', upkeep: '6'}
 ,{ id: '16', name: 'juggernaut', attack: '5', defense: '5', cost: '630', upkeep: '6'}
 	];
-	return unitList
+	return unitTypeList
 }]);

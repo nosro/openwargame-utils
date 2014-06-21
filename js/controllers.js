@@ -32,7 +32,8 @@ OpenWarUtilsApp.controller('UnitCtrl', ['$scope', 'UnitTypesData', function ($sc
 		return result;
 	}
 	;
-	$scope.unitList = UnitTypesData;
+
+	$scope.unitTypeList = UnitTypesData;
 	$scope.units = [];
 	$scope.selectedUnit = null;
 	$scope.addUnit = function (unitType) {
@@ -51,8 +52,12 @@ OpenWarUtilsApp.controller('UnitCtrl', ['$scope', 'UnitTypesData', function ($sc
 
 		for (var i in $scope.units) {
 			unit = $scope.units[i];
-			if (unit.typeId == unitType.id) {
-				inc = Math.max(unit.inc, inc);
+			if (unit && unit.hasOwnProperty('typeId')) {
+				if (unit.typeId == unitType.id) {
+					inc = Math.max(unit.inc, inc);
+				}
+			} else {
+				console.log('error adding', unit)
 			}
 		}
 		newUnit.inc = inc + 1;
@@ -78,13 +83,12 @@ OpenWarUtilsApp.controller('UnitCtrl', ['$scope', 'UnitTypesData', function ($sc
 		$scope.units = shuffle($scope.units);
 	};
 
-	console.log($scope.openWarUnits);
-
 	var setupSortable = function() {
-		var mySort = document.getElementById($scope.sortableId);
-		new Sortable(mySort, {
-			handle: '.glyphicon-sort',
-			draggable: 'tr',
+		var mySort = document.getElementById($scope.sortableId),
+			group = $scope.sortableId,
+			sortable = new Sortable(mySort, {
+			handle: '.sortable-handle',
+			draggable: '.sortable-item',
 			onUpdate: function (evt){
 				// get new sort order based on indexes
 				var newSortIndexes = [];
