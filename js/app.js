@@ -38,9 +38,7 @@ openWarUtilsMod.value('unitTypes', [
 
 // This can become a simple service factory if we don't need to configure it
 openWarUtilsMod.provider('forces', [function () {
-	var units = {};
 	this.units = {};
-
 	this.battles = 0;
 
 	// TODO - actually this is setClan
@@ -48,14 +46,14 @@ openWarUtilsMod.provider('forces', [function () {
 		if (clanName) {
 			this.units[clanName] = [];
 		}
-		console.log('addClan', this.units);
+		//console.log('addClan', this.units);
 	}
 	// TODO - actually this is setUnits
 	this.addUnits = function (clanName, unitsCollection) {
 		if (clanName && unitsCollection) {
 			this.units[clanName] = unitsCollection;
 		}
-		console.log('addUnits', this.units);
+		// console.log('addUnits', this.units);
 	}
 	this.getUnits = function (clanName) {
 
@@ -64,7 +62,7 @@ openWarUtilsMod.provider('forces', [function () {
 		} else {
 			return this.units;
 		}
-		console.log('getUnits', this.units);
+		// console.log('getUnits', this.units);
 	}
 
 // TODO this could be a separate battles service
@@ -80,7 +78,7 @@ openWarUtilsMod.provider('forces', [function () {
 			'addClan' : this.addClan,
 			'addUnits' : this.addUnits,
 			'getUnits' : this.getUnits,
-			'addBattles' : this.addBattles,
+			'updateBattles' : this.updateBattles,
 			'getBattles': this.getBattles,
 			'battles': this.battles,
 			'units' : this.units
@@ -95,7 +93,7 @@ openWarUtilsMod.config(function (forcesProvider) {
 			name : 'knight_1',
 			attack : 2,
 			defense : 2,
-			cost : 7,
+			cost : 70,
 			upkeep : 3
 		};
 	forcesProvider.addClan("The Good Guys");
@@ -105,6 +103,12 @@ openWarUtilsMod.config(function (forcesProvider) {
 	knight.name = 'black_knight';
 	forcesProvider.addUnits("The Bad Guys", new Array(angular.copy(knight)));
 });
+
+openWarUtilsMod.filter('deadClass', [function() {
+	return function(input) {
+		return (input)? 'dead' : '';
+	}
+}]);
 
 // openWarUtilsMod.directive('openWarClan', [function () {
 // 	return {

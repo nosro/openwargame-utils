@@ -1,6 +1,25 @@
 'use strict';
 
 openWarUtilsMod.controller('BattleCtrl', ['$scope', 'forces', function ($scope, forces) {
+	$scope.allDead = false;
+	$scope.fightCount = 4;
+
+	$scope.reset = function () {
+		for (var clanName in forces.units) {
+			var units = forces.units[clanName];
+			for (var r = 0; r < units.length; r++) {
+				units[r].dealt = 0;
+				units[r].blocked = 0;
+				units[r].taken = 0;
+				units[r].dead = false;
+			}
+		}
+		forces.battles = 0;
+		$scope.battles = forces.battles;
+		$scope.allDead = false;
+		$scope.error = '';
+	}
+
 	$scope.fight = function () {
 		var clanForces = forces.getUnits(),
 			otherClanName,
@@ -10,8 +29,18 @@ openWarUtilsMod.controller('BattleCtrl', ['$scope', 'forces', function ($scope, 
 			otherUnit,
 			deal,
 			take,
-			damage
+			damage,
+			allDead,
+			message
 		;
+
+		for (var clanName in forces.units) {
+			var units = forces.units[clanName];
+			for (var r = 0; r < units.length; r++) {
+				units[r].dealt = 0;
+				units[r].blocked = 0;
+			}
+		}
 
 		for (var clanName in clanForces) {
 			// While we just have two clans fighting this works TODO - pluralize for more
@@ -21,66 +50,116 @@ openWarUtilsMod.controller('BattleCtrl', ['$scope', 'forces', function ($scope, 
 					otherUnits = clanForces[otherClanName];
 				}
 			}
-			console.log(clanName + ' vs ' + otherClanName);
+			// console.log(clanName + ' vs ' + otherClanName);
 			units = clanForces[clanName];
+
+			unitloop:
 			for (var i = 0; i < units.length; i++) {
 				unit = units[i];
+
 				if (!unit.dead) {
-					// TODO - this is not proper binary progression of value
-					unit.dealt = Math.floor(Math.random() * (unit.attack + 1));
-					console.log(clanName, unit.name, 'total dealt:', unit.dealt);
+					unit.dealt = 0;
+					for (var a = unit.attack - 1; a >= 0; a--) {
+						unit.dealt += Math.floor(Math.random() * 2);
+					};
 					damage = 0;
+					enemyunitloop:
 					for (var j = 0; j < otherUnits.length; j++) {
 						otherUnit = otherUnits[j];
 						if (otherUnit.dead || otherUnit.taken == otherUnit.blocked + 1) {
-							continue;
+							continue enemyunitloop;
 						}
-						if (damage >= unit.dealt) {
-							break;
-						}
+
 						if (!otherUnit.blocked) {
-							// TODO - this is not proper binary progression of value
-							otherUnit.blocked = Math.floor(Math.random() * (otherUnit.defense + 1));
+							otherUnit.blocked = 0;
+							for (var b = otherUnit.defense - 1; b >= 0; b--) {
+								otherUnit.blocked += Math.floor(Math.random() * 2);
+							};
 						}
 						if (!otherUnit.taken) {
 							otherUnit.taken = 0;
 						}
-						console.log(clanName, unit.name, 'hits:', otherUnit.name, 'total blocked:', otherUnit.blocked);
+
+						if (damage >= unit.dealt) {
+							break enemyunitloop;
+						}
+
 						// TODO - eventually we may have health
 						if (otherUnit.taken <= otherUnit.blocked + 1) {
 							deal = unit.dealt - damage;
 							take = Math.min(deal, otherUnit.blocked + 1 - otherUnit.taken);
+
+							console.log(unit.name, 'deals', deal, otherUnit.name, 'blocks', otherUnit.blocked);
+
 							otherUnit.taken = otherUnit.taken + take;
 							damage = damage + take;
-							console.log(otherClanName, otherUnit.name,'take/deal:', take + '/' + deal, 'total taken:', otherUnit.taken, 'damage dealt', damage);
+
+							if (otherUnit.taken >= otherUnit.blocked + 1) {
+								console.log(otherUnit.name, 'killed');
+							}
+							//console.log(otherClanName, otherUnit.name,'take/deal:', take + '/' + deal, 'total taken:', otherUnit.taken, 'damage dealt', damage);
 						}
+
 					}
 				}
 			}
 		};
+		// END OF BATTLE CLEANUP
+		cleanup:
 		for (var clanName in clanForces) {
-			console.log('cleanup', clanName);
 			units = clanForces[clanName];
-			// CLEANUP
-			for (var i = 0; i < units.length; i++) {
-				unit = units[i];
-				if (unit.taken >= unit.blocked + 1) {
-					console.log(unit, unit.taken, unit.blocked, ' dead')
-					unit.dead = 1;
+			message = '';
+			$scope.allDead = true;
+			$scope[clanName] = {};
+			$scope[clanName].allDead = true;
+			for (var c = 0; c < units.length; c++) {
+				unit = units[c];
+				if (unit.hasOwnProperty('taken') && unit.hasOwnProperty('blocked')) {
+					if (unit.taken >= unit.blocked + 1) {
+						message += clanName + ':' + unit.name + ' killed' + "\n";
+						unit.dead = true;
+					} else {
+						$scope.allDead = false;
+						$scope[clanName].allDead = false;
+						unit.dead = false;
+					}
 				}
-				unit.dealt = 0;
-				unit.blocked = 0;
 			}
+
+			if ($scope[clanName].allDead) {
+				$scope.error = "No more enemies to fight!";
+			}
+
+			// if ($scope.allDead) {
+			// 	break cleanup;
+			// }
 		}
-		console.log(forces.battles);
-		forces.battles = forces.battles + 1;
-		console.log(forces.battles);
-		$scope.error = "Fight!";
+
+		if ($scope.allDead) {
+			$scope.error = "Mutual Destruction!";
+		}
+
+		// forces.battles = forces.battles + 1;
+		$scope.battles = ++forces.battles;
+
 		//$scope.error = "Sorry, can't fight - programming isn't done yet!";
 	}
+
+	$scope.megaFight = function () {
+
+		for (var i = fightCount; i >= 0; i--) {
+			// while () {
+
+			// }
+		}
+	}
+
+	$scope.$watch(function () { return forces.battles;}, function (newValue, oldValue, scope) {
+		
+	});
 }]);
 
-openWarUtilsMod.controller('ClanCtrl', ['$scope', '$attrs', 'unitTypes', 'forces',  function ($scope, $attrs, unitTypes, forces) {
+openWarUtilsMod.controller('ClanCtrl', ['$scope', '$attrs', 'unitTypes', 'forces', function ($scope, $attrs, unitTypes, forces) {
 	var shuffle = function (array) {
 		var m = array.length, t, i;
 
@@ -133,7 +212,8 @@ openWarUtilsMod.controller('ClanCtrl', ['$scope', '$attrs', 'unitTypes', 'forces
 				$scope.newSortIndexes = newSortIndexes;
 				$scope.units = getSorted($scope.units, newSortIndexes);
 				$scope.$apply();
-				
+				updateUnits($scope.clanName, $scope.units);
+
 				// example of a standard $http request you would do
 				// note that you don't need $scope.$apply(); for $http requests
 				// http://jimhoskins.com/2012/12/17/angularjs-and-apply.html
@@ -157,7 +237,6 @@ openWarUtilsMod.controller('ClanCtrl', ['$scope', '$attrs', 'unitTypes', 'forces
 				$scope.units = forces.getUnits($scope.clanName);
 			}
 			updateUnits($scope.clanName, $scope.units);
-			$scope.battles = forces.battles;
 		}
 	},
 	updateUnits = function(name, units) {
@@ -220,9 +299,9 @@ openWarUtilsMod.controller('ClanCtrl', ['$scope', '$attrs', 'unitTypes', 'forces
 		initClan($attrs.openWarClan);
 	}
 
-	// TESTING
-	$scope.$watch('units', function (newValue, oldValue, scope) {
-		console.log('watcher')
+	// WATCH
+	$scope.battles = forces.battles;
+	$scope.$watch(function () { return forces.battles;}, function (newValue, oldValue, scope) {
+		$scope.battles = forces.battles;
 	});
-	//forces.addClan($scope.clanName);
 }]);

@@ -1,4 +1,4 @@
-		<h2 class="text-center text-muted">{{clanName}}</h2>
+		<h2 class="text-center text-muted {{(clanName =='The Good Guys')? 'text-info' : 'text-danger'}}">{{clanName}}</h2>
 		<div class="center-block text-center" style="padding-bottom: 1%">
 			<form class="form-inline" role="form">
 				<select class="form-control " type="text" ng-model="selectedUnit" ng-options="unitType.name for unitType in unitTypeList track by unitType.id">
@@ -11,7 +11,7 @@
 		<p class="text-warning text-center" ng-show="units.length===0" >(No Units)</p>
 		<div class="panel" ng-show="units.length > 0">
 
-			<table class="table table-striped">
+			<table class="units table table-striped">
 				<thead>
 					<tr class="h5">
 						<td></td>
@@ -20,11 +20,11 @@
 						</td>
 
 						<td class="text-center">
-							Attack<span ng-show="battles > 0" style="color:silver;">/Delt</span>
+							Attack
 						</td>
 
 						<td class="text-center">
-							Defense<span ng-show="battles > 0" style="color:silver;">/Taken</span>
+							Defense
 						</td>
 
 						<td>
@@ -32,22 +32,33 @@
 					</tr>
 				</thead>
 				<tbody id="{{clanSortName}}" class="sortable">
-					<tr class="sortable-item" ng-repeat="unit in units track by unit.name" data-index="{{$index}}">
+					<tr class="sortable-item {{(unit.dead)? 'dead' : ''}}" ng-repeat="unit in units track by unit.name" data-index="{{$index}}">
 						<td>
-							<span class="glyphicon glyphicon-sort sortable-handle"></span>
+							<div class="wrapper">
+								<span class="glyphicon glyphicon-sort sortable-handle"></span>
+							</div>
 						</td>
 						<td>
+							<div class="wrapper">
 							<strong>{{unit.name}}</strong>
-							<span class="right-tip" data-tips="Cost: {{unit.cost}} points, Upkeep: £{{unit.upkeep}}"><span class="glyphicon glyphicon-info-sign text-info"><small class="text-hide">info</small></span></span>
+								<span class="right-tip" data-tips="Cost: {{unit.cost}} points, Upkeep: £{{unit.upkeep}}"><span class="glyphicon glyphicon-info-sign text-info"><small class="text-hide">info</small></span></span>
+							</div>
 						</td>
 						<td class="text-center">
-							{{unit.attack}}
+							<div class="wrapper">
+								<span ng-show="battles > 0 && unit.dealt !== undefined " style="color:silver;">{{unit.dealt}}/</span><strong>{{unit.attack}}</strong>
+							</div>
 						</td>
 						<td class="text-center">
-							{{unit.defense}}
+							<div class="wrapper">
+								<span ng-show="battles > 0 && unit.blocked !== undefined " style="color:silver;">{{unit.blocked}}/</span><strong>{{unit.defense}}</strong>
+							</div>
 						</td>
 						<td>
-							<a class="close" type="button" aria-hidden="true" value="close" ng-click="removeUnit(unit.name)" >&times;</a>
+							<div class="wrapper">
+								&nbsp;
+								<a class="close" type="button" aria-hidden="true" value="close" ng-click="removeUnit(unit.name)" >&times;</a>
+							</div>
 						</td>
 					</tr>
 				</tbody>
