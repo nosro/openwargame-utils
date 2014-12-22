@@ -1,8 +1,10 @@
 'use strict';
 
-openWarUtilsMod.controller('BattleCtrl', ['$scope', 'forces', function ($scope, forces) {
+angular.module('openWarUtilsMod')
+.controller('BattleCtrl', ['$scope', 'forces', function ($scope, forces) {
 	$scope.allDead = false;
 	$scope.fightCount = 4;
+	$scope.clans = forces.getClans();
 
 	$scope.reset = function () {
 		for (var clanName in forces.units) {
@@ -157,9 +159,12 @@ openWarUtilsMod.controller('BattleCtrl', ['$scope', 'forces', function ($scope, 
 	$scope.$watch(function () { return forces.battles;}, function (newValue, oldValue, scope) {
 		
 	});
+
+
 }]);
 
-openWarUtilsMod.controller('ClanCtrl', ['$scope', '$attrs', 'unitTypes', 'forces', function ($scope, $attrs, unitTypes, forces) {
+angular.module('openWarUtilsMod')
+.controller('ClanCtrl', ['$scope', '$attrs', 'unitTypes', 'forces', function ($scope, $attrs, unitTypes, forces) {
 	var shuffle = function (array) {
 		var m = array.length, t, i;
 

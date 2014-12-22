@@ -15,9 +15,10 @@ var openWarUtilsModule = angular.module('openWarUtils', [])
 
 	});
 */
-var openWarUtilsMod = angular.module('openWarUtilsMod', []);
+angular.module('openWarUtilsMod', []);
 
-openWarUtilsMod.value('unitTypes', [
+angular.module('openWarUtilsMod')
+.value('unitTypes', [
  { id: '1', name: 'scout', attack: 0, defense: 0, cost: 10, upkeep: 1}
 ,{ id: '2', name: 'ranger', attack: 1, defense: 0, cost: 20, upkeep: 2}
 ,{ id: '3', name: 'lookout', attack: 0, defense: 1, cost: 20, upkeep: 2}
@@ -37,33 +38,40 @@ openWarUtilsMod.value('unitTypes', [
 ]);
 
 // This can become a simple service factory if we don't need to configure it
-openWarUtilsMod.provider('forces', [function () {
-	this.units = {};
-	this.battles = 0;
+angular.module('openWarUtilsMod')
+.provider('forces', [function Forces() {
+	this.clans = {};
+	// this.battles = 0;
 
-	// TODO - actually this is setClan
+
 	this.addClan = function (clanName) {
 		if (clanName) {
-			this.units[clanName] = [];
+			this.clans[clanName] = {name: clanName, units : []};
 		}
-		//console.log('addClan', this.units);
+		console.log('added Clan', this.clans);
 	}
-	// TODO - actually this is setUnits
+
+	this.getClans = function () {
+		return this.clans;
+	}
+
+	this.getClan = function (clanName) {
+		return this.clans[clanName];
+	}
+
 	this.addUnits = function (clanName, unitsCollection) {
 		if (clanName && unitsCollection) {
-			this.units[clanName] = unitsCollection;
+			this.clans[clanName].units = unitsCollection;
 		}
-		// console.log('addUnits', this.units);
+		console.log('added Units', this.clans[clanName].units);
 	}
 	this.getUnits = function (clanName) {
 
 		if (clanName) {
-			return this.units[clanName];
-		} else {
-			return this.units;
+			return this.clans[clanName].units;
 		}
-		// console.log('getUnits', this.units);
-	}
+		console.log('get Units', this.clans[clanName].units);
+	}	
 
 // TODO this could be a separate battles service
 	this.updateBattles = function (n) {
@@ -74,19 +82,12 @@ openWarUtilsMod.provider('forces', [function () {
 	}
 
 	this.$get = function () {
-		return {
-			'addClan' : this.addClan,
-			'addUnits' : this.addUnits,
-			'getUnits' : this.getUnits,
-			'updateBattles' : this.updateBattles,
-			'getBattles': this.getBattles,
-			'battles': this.battles,
-			'units' : this.units
-		}
+		return new Forces();
 	}
 }]);
 
-openWarUtilsMod.config(function (forcesProvider) {
+angular.module('openWarUtilsMod')
+.config(function (forcesProvider) {
 	var knight = {
 			typeId : '7',
 			inc : 1,
@@ -104,29 +105,20 @@ openWarUtilsMod.config(function (forcesProvider) {
 	forcesProvider.addUnits("The Bad Guys", new Array(angular.copy(knight)));
 });
 
-openWarUtilsMod.filter('deadClass', [function() {
+angular.module('openWarUtilsMod')
+.filter('deadClass', [function() {
 	return function(input) {
 		return (input)? 'dead' : '';
 	}
 }]);
 
 // openWarUtilsMod.directive('openWarClan', [function () {
+// 	restrict:'E',
+// 	linkFunction: 
 // 	return {
 // 		controller: function($scope, $element, $attrs) {
 // 			$scope.test = 'foo';
 // 			// clanCtrl.initClan(attrs.openWarClan);
-// 		}
-// 	}
-// }]);
-
-// openWarUtilsMod.directive('tooltip', [function () {
-// 	return {
-// 		restrict:'A',
-// 		link: function(scope, element, attrs)
-// 		{
-// 			$(element)
-// 				.attr('title',scope.$eval(attrs.tooltip))
-// 				.tooltip({placement: "right"});
 // 		}
 // 	}
 // }]);

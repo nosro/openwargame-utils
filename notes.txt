@@ -1,0 +1,5 @@
+App data structure will be:
+
+scope.clans = [
+	{name: 'xyz', units: []}
+]
