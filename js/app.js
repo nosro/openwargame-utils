@@ -39,52 +39,54 @@ angular.module('openWarUtilsMod')
 
 // This can become a simple service factory if we don't need to configure it
 angular.module('openWarUtilsMod')
-.provider('forces', [function Forces() {
-	this.clans = {};
-	// this.battles = 0;
-
-
+.provider('forces', function (){
+	var clans = {},
+	    battles = 0;
+	
 	this.addClan = function (clanName) {
 		if (clanName) {
-			this.clans[clanName] = {name: clanName, units : []};
+			clans[clanName] = {name: clanName, units : []};
 		}
-		console.log('added Clan', this.clans);
-	}
-
-	this.getClans = function () {
-		return this.clans;
-	}
-
-	this.getClan = function (clanName) {
-		return this.clans[clanName];
-	}
+		console.log('added Clan', clans);
+	}	
 
 	this.addUnits = function (clanName, unitsCollection) {
 		if (clanName && unitsCollection) {
-			this.clans[clanName].units = unitsCollection;
+			clans[clanName].units = unitsCollection;
 		}
-		console.log('added Units', this.clans[clanName].units);
+		console.log('added Units', clans[clanName].units);
 	}
-	this.getUnits = function (clanName) {
 
-		if (clanName) {
-			return this.clans[clanName].units;
-		}
-		console.log('get Units', this.clans[clanName].units);
-	}	
-
-// TODO this could be a separate battles service
+	// TODO this could be a separate battles service
 	this.updateBattles = function (n) {
 		this.battles = n;
 	}
-	this.getBattles = function () {
-		return this.battles;
-	}
+	
+	function Forces() {
+		this.getClans = function () {
+			return clans;
+		}
 
+		this.getClan = function (clanName) {
+			return clans[clanName];
+		}
+
+		this.getUnits = function (clanName) {
+			if (clanName) {
+				return clans[clanName].units;
+			}
+			console.log('get Units', clans[clanName].units);
+		}	
+
+		this.getBattles = function () {
+			return battles;
+		}
+	}
+	
 	this.$get = function () {
 		return new Forces();
 	}
-}]);
+});
 
 angular.module('openWarUtilsMod')
 .config(function (forcesProvider) {

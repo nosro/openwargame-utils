@@ -4,7 +4,7 @@ angular.module('openWarUtilsMod')
 	restrict: 'A',
 	scope: {
 		name : '=openWarClan',
-		units: '&openWarUnits'
+		units: '=openWarUnits'
 	},
 	templateUrl: 'clans.html'
   };
